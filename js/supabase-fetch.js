@@ -17,6 +17,57 @@
         }
     }
 
+    // --- Local Student Photo Mapping ---
+    const localStudentPhotos = {
+        1: 'images/1.jpg',
+        2: 'images/2.png',
+        3: 'images/3.jpeg',
+        4: 'images/4.jpg',
+        5: 'images/5.jpg',
+        6: 'images/6.jpg',
+        7: 'images/7.jpg',
+        8: 'images/8.jpeg',
+        9: 'images/9.JPG',
+        10: 'images/10.png',
+        11: 'images/11.JPG',
+        12: 'images/12.jpg',
+        13: 'images/13.jpg',
+        14: 'images/14.jpg',
+        15: 'images/15.jpg',
+        16: 'images/16.png',
+        17: 'images/17.png',
+        18: 'images/18.png',
+        19: 'images/19.jpg',
+        20: 'images/20.jpg',
+        21: 'images/21.jpg',
+        22: 'images/22.jpg',
+        23: 'images/23.png',
+        24: 'images/24.png',
+        25: 'images/25.jpg',
+        26: 'images/26.jpg',
+        27: 'images/27.jpeg',
+        28: 'images/28.jpg',
+        29: 'images/29.jpeg',
+        30: 'images/30.jpeg',
+        31: 'images/31.jpg',
+        32: 'images/32.webp',
+        33: 'images/33.jpg',
+        34: 'images/34.jpg',
+        35: 'images/35.jpg'
+    };
+
+    function getStudentPhotoUrl(profile) {
+        if (!profile) return 'https://api.dicebear.com/7.x/initials/svg?seed=Unknown&backgroundColor=00288e,7C3AED&textColor=ffffff';
+        if (profile.foto_url && profile.foto_url.trim() !== '') {
+            return profile.foto_url;
+        }
+        const noAbsen = profile.nomor_absen ? parseInt(profile.nomor_absen, 10) : null;
+        if (noAbsen && localStudentPhotos[noAbsen]) {
+            return localStudentPhotos[noAbsen];
+        }
+        return `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(profile.nama || 'Siswa')}&backgroundColor=00288e,7C3AED&textColor=ffffff`;
+    }
+
     // --- 2. Anggota Kelas (List) ---
     const membersContainer = document.getElementById('members-container');
     if (membersContainer) {
@@ -32,7 +83,7 @@
                 }
 
                 membersContainer.innerHTML = list.map(profile => {
-                    const avatarUrl = profile.foto_url || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(profile.nama)}&backgroundColor=00288e,7C3AED&textColor=ffffff`;
+                    const avatarUrl = getStudentPhotoUrl(profile);
                     const noAbsen = profile.nomor_absen ? profile.nomor_absen.toString().padStart(2, '0') : '00';
                     const hasSpecialRole = profile.jabatan && profile.jabatan !== 'Anggota';
                     const isSekretaris1 = profile.nama && (profile.nama.includes('Jorel') || profile.jabatan === 'Sekretaris 1' || profile.nomor_absen === 13);
@@ -151,7 +202,7 @@
             applyFilters();
             
             // --- Update Organizational Structure avatars if they exist ---
-            const getAvatar = (profile) => profile?.foto_url || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(profile?.nama || 'Unknown')}&backgroundColor=00288e,7C3AED&textColor=ffffff`;
+            const getAvatar = (profile) => getStudentPhotoUrl(profile);
 
             const ketua = data.find(p => p.jabatan === 'Ketua Kelas');
             if (ketua && document.getElementById('img-ketua')) document.getElementById('img-ketua').src = getAvatar(ketua);
@@ -272,7 +323,7 @@
 
                 const avatarEl = document.getElementById('detail-avatar');
                 if (avatarEl) {
-                    avatarEl.src = data.foto_url || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(data.nama)}&backgroundColor=00288e,7C3AED&textColor=ffffff`;
+                    avatarEl.src = getStudentPhotoUrl(data);
                     if (data.nama && (data.nama.includes('Jorel') || data.nomor_absen === 13 || data.jabatan === 'Sekretaris 1')) {
                         avatarEl.style.objectPosition = 'center 15%';
                     }
